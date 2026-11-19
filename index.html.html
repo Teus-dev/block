@@ -16,14 +16,14 @@ html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none;backgrou
 body{font-family:'Fredoka',system-ui,sans-serif;color:var(--text);background:radial-gradient(circle at 50% 0%,#1e293b 0%,#090d16 100%);display:flex;flex-direction:column}
 header{padding:10px 14px 0;max-width:480px;width:100%;margin:0 auto;flex:none}
 .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.best{background:rgba(30,41,59,.85);border:1px solid rgba(245,158,11,.35);border-radius:14px;padding:5px 12px;line-height:1.1;min-width:84px}
+.best{background:rgba(30,41,59,.85);border:1px solid rgba(245,158,11,.35);border-radius:14px;padding:5px 9px;line-height:1.1;min-width:72px}
 .best small{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#fcd34d}
 .best b{font-size:18px;color:var(--gold)}
-h1{margin:0;font-size:30px;font-weight:700;background:linear-gradient(90deg,#67e8f9,#38bdf8,#818cf8);-webkit-background-clip:text;background-clip:text;color:transparent}
+h1{margin:0;font-size:26px;font-weight:700;background:linear-gradient(90deg,#67e8f9,#38bdf8,#818cf8);-webkit-background-clip:text;background-clip:text;color:transparent}
 h1 span{color:var(--gold);-webkit-text-fill-color:var(--gold)}
-.btns{display:flex;gap:6px}
+.btns{display:flex;gap:4px}
 button{font-family:inherit;cursor:pointer}
-.ib{width:42px;height:42px;border-radius:12px;border:1px solid #334155;background:rgba(30,41,59,.9);color:#fff;font-size:19px;padding:0}
+.ib{width:36px;height:36px;border-radius:11px;border:1px solid #334155;background:rgba(30,41,59,.9);color:#fff;font-size:17px;padding:0}
 .ib:active{transform:scale(.93)}
 .score{text-align:center;margin-top:2px}
 .score small{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
@@ -46,6 +46,19 @@ canvas{display:block;width:100%;height:100%}
 #rec{margin-bottom:16px;padding:6px;border-radius:12px;background:rgba(245,158,11,.2);border:1px solid rgba(251,191,36,.4);color:#fcd34d;font-weight:700;font-size:14px}
 .play{width:100%;padding:14px;border:0;border-radius:16px;font-size:18px;font-weight:700;color:#fff;background:linear-gradient(90deg,#10b981,#14b8a6);box-shadow:0 4px 0 rgba(0,0,0,.35)}
 .play:active{transform:translateY(3px);box-shadow:none}
+.alt{background:linear-gradient(90deg,#f59e0b,#f43f5e);margin-bottom:10px}
+#rk{position:fixed;inset:0;background:rgba(2,6,23,.88);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+.namebox{display:flex;gap:8px;margin-bottom:12px}
+input{user-select:text;-webkit-user-select:text;touch-action:auto;flex:1;min-width:0;padding:10px 12px;border-radius:12px;border:1px solid #334155;background:rgba(15,23,42,.9);color:#fff;font:inherit;font-size:16px}
+.sm{padding:0 16px;border:0;border-radius:12px;background:#0ea5e9;color:#fff;font-weight:700;font-size:15px}
+#rl{list-style:none;margin:0 0 14px;padding:0;max-height:42vh;overflow-y:auto;text-align:left;touch-action:pan-y}
+#rl *{touch-action:pan-y}
+#rl li{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;font-size:16px;border:1px solid transparent}
+#rl li span:first-child{width:34px;text-align:center;color:var(--muted)}
+#rl li span:nth-child(2){flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#rl li b{color:var(--gold)}
+#rl li.me{background:rgba(34,211,238,.15);border-color:rgba(34,211,238,.4)}
+#rl li.msg{justify-content:center;color:var(--muted);font-size:14px}
 </style>
 </head>
 <body>
@@ -54,6 +67,7 @@ canvas{display:block;width:100%;height:100%}
     <div class="best"><small>Recorde</small><b id="best">0</b></div>
     <h1>block<span>?</span></h1>
     <div class="btns">
+      <button class="ib" id="bk" aria-label="Ranking">🏆</button>
       <button class="ib" id="bv" aria-label="Vibração">📳</button>
       <button class="ib" id="bs" aria-label="Som">🔊</button>
       <button class="ib" id="br" aria-label="Reiniciar">↻</button>
@@ -70,7 +84,18 @@ canvas{display:block;width:100%;height:100%}
     <p>Não há mais espaço no tabuleiro!</p>
     <div class="stats"><div><small>Pontuação</small><b id="fs">0</b></div><div><small>Recorde</small><b id="fb">0</b></div></div>
     <div id="rec" class="hidden">🏆 Novo Recorde Alcançado!</div>
+    <button class="play alt" id="rbtn">🏆 Ver ranking</button>
     <button class="play" id="again">Jogar Novamente</button>
+  </div>
+</div>
+
+<div id="rk" class="hidden">
+  <div class="card">
+    <h2>🏆 Ranking</h2>
+    <p>Os melhores recordes dos jogadores</p>
+    <div class="namebox"><input id="nin" maxlength="15" placeholder="Seu apelido" autocomplete="off"><button class="sm" id="nsave">Salvar</button></div>
+    <ol id="rl"></ol>
+    <button class="play" id="rclose">Fechar</button>
   </div>
 </div>
 
@@ -258,7 +283,7 @@ function endDrag(e){
 cv.addEventListener('pointerup',endDrag);
 cv.addEventListener('pointercancel',endDrag);
 window.addEventListener('pointerup',endDrag);
-document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+document.addEventListener('touchmove',e=>{ if(!(e.target.closest&&e.target.closest('#rl'))) e.preventDefault(); },{passive:false});
 document.addEventListener('contextmenu',e=>e.preventDefault());
 
 // ---------- regras ----------
@@ -342,6 +367,8 @@ function checkOver(){
       $('fs').textContent=G.score.toLocaleString('pt-BR'); $('fb').textContent=G.best.toLocaleString('pt-BR');
       $('rec').classList.toggle('hidden',!(G.score>0&&G.score>=G.best));
       $('modal').classList.remove('hidden');
+      submitScore();
+      if(!myName()&&online()&&G.score>0) setTimeout(openRanking,700);
     },450);
   }
 }
@@ -484,6 +511,58 @@ $('again').addEventListener('click',newGame);
 window.addEventListener('resize',resize);
 window.addEventListener('orientationchange',()=>setTimeout(resize,200));
 if(window.ResizeObserver) new ResizeObserver(resize).observe(wrap);
+
+// ---------- ranking online (Supabase) ----------
+// Cole aqui a URL e a chave pública (anon / publishable) do seu projeto Supabase:
+const SUPABASE_URL='https://sfwtvkxogeiixhkjodgl.supabase.co/rest/v1/';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmd3R2a3hvZ2VpaXhoa2pvZGdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUxMjExNTksImV4cCI6MjExMDY5NzE1OX0.8rVoL8vOnOZOhQt8Ft416l_vXbWqv9CcK2mZ_JFQQDk';
+
+const online=()=>SUPABASE_URL.startsWith('https://')&&SUPABASE_KEY.length>20;
+let pid=store.get('blockq_pid');
+if(!pid){
+  pid=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2);
+  store.set('blockq_pid',pid);
+}
+const myName=()=>store.get('blockq_name')||'';
+async function rpc(fn,body){
+  const headers={'Content-Type':'application/json',apikey:SUPABASE_KEY};
+  if(SUPABASE_KEY.startsWith('eyJ')) headers.Authorization='Bearer '+SUPABASE_KEY;
+  const r=await fetch(SUPABASE_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers,body:JSON.stringify(body)});
+  if(!r.ok) throw new Error('http '+r.status);
+  const t=await r.text(); return t?JSON.parse(t):null;
+}
+async function submitScore(){
+  if(!online()||!myName()||G.best<=0) return;
+  try{ await rpc('submit_score',{p_id:pid,p_name:myName(),p_score:G.best}); }catch(e){}
+}
+async function openRanking(){
+  $('rk').classList.remove('hidden');
+  $('nin').value=myName();
+  const list=$('rl');
+  const msg=t=>{ list.textContent=''; const li=document.createElement('li'); li.className='msg'; li.textContent=t; list.appendChild(li); };
+  if(!online()){ msg('Ranking ainda não configurado.'); return; }
+  msg('Carregando...');
+  try{
+    await submitScore();
+    const rows=await rpc('get_ranking',{p_id:pid});
+    list.textContent='';
+    if(!rows||!rows.length){ msg('Ninguém no ranking ainda. Seja o primeiro!'); return; }
+    rows.forEach(x=>{
+      const li=document.createElement('li'); if(x.is_me) li.className='me';
+      const a=document.createElement('span'); a.textContent=['🥇','🥈','🥉'][x.pos-1]||(x.pos+'º');
+      const b=document.createElement('span'); b.textContent=x.name;
+      const c=document.createElement('b'); c.textContent=Number(x.score).toLocaleString('pt-BR');
+      li.append(a,b,c); list.appendChild(li);
+    });
+  }catch(e){ msg('Não foi possível carregar. Verifique a internet.'); }
+}
+$('bk').addEventListener('click',openRanking);
+$('rbtn').addEventListener('click',openRanking);
+$('rclose').addEventListener('click',()=>$('rk').classList.add('hidden'));
+$('nsave').addEventListener('click',()=>{
+  const n=$('nin').value.trim().slice(0,15); if(!n) return;
+  store.set('blockq_name',n); openRanking();
+});
 
 icons(); resize(); newGame(); requestAnimationFrame(loop);
 </script>
