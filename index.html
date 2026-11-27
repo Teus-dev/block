@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#090d16">
+<title>Meus Jogos</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--text:#f8fafc;--muted:#94a3b8;--line:rgba(148,163,184,.2);--gold:#fbbf24;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;font-family:'Fredoka',system-ui,sans-serif;color:var(--text);
+background:radial-gradient(circle at 50% -10%,#1e293b 0%,#090d16 65%) fixed #090d16}
+.wrap{max-width:980px;margin:0 auto;padding:40px 18px 28px}
+header{text-align:center;margin-bottom:34px}
+h1{margin:0;font-size:clamp(34px,8vw,54px);font-weight:700;line-height:1.1;
+background:linear-gradient(90deg,#67e8f9,#818cf8,#e879f9);-webkit-background-clip:text;background-clip:text;color:transparent}
+header p{margin:10px auto 0;max-width:520px;color:var(--muted);font-size:17px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.card{display:flex;flex-direction:column;border-radius:22px;overflow:hidden;background:rgba(30,41,59,.7);
+border:1px solid var(--line);color:inherit;text-decoration:none;transition:transform .15s,border-color .15s,box-shadow .15s}
+a.card:hover{transform:translateY(-4px);border-color:rgba(103,232,249,.5);box-shadow:0 12px 30px rgba(0,0,0,.4)}
+a.card:active{transform:scale(.98)}
+.card.soon{opacity:.6}
+.art{height:130px;display:flex;align-items:center;justify-content:center;font-size:58px}
+.body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
+.body h2{margin:0;font-size:22px}
+.body p{margin:0;color:var(--muted);font-size:15px;line-height:1.4;flex:1}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tags span{font-size:12px;padding:3px 10px;border-radius:99px;background:rgba(15,23,42,.8);border:1px solid var(--line);color:#cbd5e1}
+.tags span.new{color:var(--gold);border-color:rgba(251,191,36,.4)}
+.play{margin-top:4px;text-align:center;padding:11px;border-radius:14px;font-weight:700;font-size:16px;color:#fff;
+background:linear-gradient(90deg,#10b981,#14b8a6);box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.card.soon .play{background:#334155;box-shadow:none;color:var(--muted)}
+footer{text-align:center;margin-top:40px;color:#64748b;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 id="title">Meus Jogos</h1>
+    <p id="subtitle"></p>
+  </header>
+  <main class="grid" id="grid"></main>
+  <footer>Mais jogos em breve</footer>
+</div>
+
+<script>
+// ===== Edite aqui =====
+const SITE = {
+  title: 'Meus Jogos',
+  subtitle: 'Jogos'
+};
+
+// Para adicionar um jogo novo: copie um bloco, mude os dados e coloque o jogo numa pasta com o mesmo nome do "href".
+const GAMES = [
+  { name: 'block?', emoji: '🧱', href: 'block/', colors: ['#0e7490', '#1d4ed8'],
+    desc: 'Encaixe as peças no tabuleiro 8×8, complete linhas e faça combos. Tem ranking online com os amigos!',
+    tags: ['Puzzle', 'Ranking'] },
+  { name: 'block? giro', emoji: '🔄', href: 'block-giro/', colors: ['#6b21a8', '#be123c'], isNew: true,
+    desc: 'O mesmo desafio, mas agora você pode girar as peças antes de encaixar. Toque na peça para girar. Com ranking próprio!',
+    tags: ['Puzzle', 'Ranking', 'Novo'] },
+  { name: 'Challenge of the Ten', emoji: '🏁', href: 'challenge-of-the-ten/', colors: ['#b45309', '#7c3aed'], isNew: true,
+    desc: 'Plataforma com 10 fases cada vez mais difíceis. Pule, desvie dos espinhos e chegue à bandeira com poucas mortes.',
+    tags: ['Plataforma', '10 fases', 'Novo'] },
+  { name: 'Bighead Soccer', emoji: '⚽', href: 'bighead-soccer/', colors: ['#15803d', '#1e3a8a'], isNew: true,
+    desc: 'Futebol de cabeção 2D online: crie uma sala, chame até 7 amigos e disputem um campeonato com partidas de 30 segundos.',
+    tags: ['Esporte', 'Online', 'Campeonato', 'Novo'] },
+  { name: 'Em breve', emoji: '🚧', href: null, colors: ['#334155', '#1e293b'],
+    desc: 'Novos jogos estão a caminho. Volte aqui para conferir!',
+    tags: ['Em breve'] }
+];
+// ======================
+
+document.title = SITE.title;
+document.getElementById('title').textContent = SITE.title;
+document.getElementById('subtitle').textContent = SITE.subtitle;
+
+const grid = document.getElementById('grid');
+GAMES.forEach(g => {
+  const card = document.createElement(g.href ? 'a' : 'div');
+  card.className = 'card' + (g.href ? '' : ' soon');
+  if (g.href) card.href = g.href;
+
+  const art = document.createElement('div');
+  art.className = 'art';
+  art.style.background = 'linear-gradient(135deg,' + g.colors[0] + ',' + g.colors[1] + ')';
+  art.textContent = g.emoji;
+
+  const body = document.createElement('div');
+  body.className = 'body';
+  const h = document.createElement('h2'); h.textContent = g.name;
+  const p = document.createElement('p'); p.textContent = g.desc;
+  const tags = document.createElement('div'); tags.className = 'tags';
+  g.tags.forEach(t => {
+    const s = document.createElement('span'); s.textContent = t;
+    if (t === 'Novo') s.className = 'new';
+    tags.appendChild(s);
+  });
+  const btn = document.createElement('div');
+  btn.className = 'play';
+  btn.textContent = g.href ? 'Jogar' : 'Em breve';
+
+  body.append(h, p, tags, btn);
+  card.append(art, body);
+  grid.appendChild(card);
+});
+</script>
+</body>
+</html>
